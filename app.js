@@ -1,28 +1,20 @@
 const express = require('express');
 const app = express();
+const people = require('./routes/people')
+const auth = require('./routes/auth')
 
-function logger (req, res, next) {
-    const method = req.method;
-    const url = req.url;
-    const year = new Date().getFullYear();
-    console.log(method, url, year);
-    // res.send('Testing.....') --- Terminate
-    next() // or parse to next  
-}
+app.use(express.static('./methods-public'))
+app.use(express.urlencoded({extended: false}))
+app.use(express.json())
 
-// req => middleware => res
-app.get('/', logger, (req, res) => {
-    res.send('<h1>Home Page</h1>')
-})
+// routes
+app.use('/api/people', people)
+app.use('/login', auth)
 
-app.get('/about', logger, (req, res) => {
-    res.send('<h1>About Page</h1>')
-})
-
-app.get("*", (req, res) => {
-    res.send('<h1>Resource Does Not Exist')
+app.get('*', (req, res) => {
+    res.status(404).send('Resource Does Not Exist')
 })
 
 app.listen(5000, () => {
-    console.log('Server is listening on port 5000.......')
+    console.log('Server is listening on port 5000.....')
 })
